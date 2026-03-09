@@ -2818,7 +2818,7 @@ async function loadDevices() {
       const y = 15 + Math.floor(i/4)*25 + Math.random()*8;
       const cls = d.status==='maintenance' ? 'mn pend' : isOnline(d) ? 'mn' : 'mn off';
       const lbl = isOnline(d)?'Online':'Offline';
-      return `<div class="${cls}" style="left:${x}%;top:${y}%" title="${d.device_name||d.name||'—'} — ${lbl}" onclick="notif('${(d.device_name||'Device').replace(/'/g,'')}: ${lbl}','📺')"></div>`;
+      return `<div class="${cls}" style="left:${x}%;top:${y}%" title="${d.name||d.name||'—'} — ${lbl}" onclick="notif('${(d.name||'Device').replace(/'/g,'')}: ${lbl}','📺')"></div>`;
     }).join('');
     mapEl.innerHTML = '<div class="map-bg"></div>' + nodes + '<span style="position:absolute;bottom:10px;left:12px;font-size:10px;font-family:DM Mono,monospace;color:var(--dim)">Clique nos nós para detalhes</span>';
   }
@@ -2841,7 +2841,7 @@ async function loadDevices() {
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
         <div style="font-size:20px">📺</div>
         <div style="flex:1">
-          <div style="font-size:13px;font-weight:600">${d.device_name || d.name || 'Player sem nome'}</div>
+          <div style="font-size:13px;font-weight:600">${d.name || d.name || 'Player sem nome'}</div>
           <div style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace">📍 ${screenName} · Último ping: ${lastSeen}</div>
         </div>
         <span class="tag ${cls}">${lbl}</span>
@@ -2853,10 +2853,10 @@ async function loadDevices() {
       </div>` : ''}
       ${d.current_video_url ? `<div style="font-size:11px;color:var(--green);margin-top:6px">▶ Reproduzindo agora</div>` : ''}
       <div style="display:flex;gap:6px;margin-top:10px">
-        <button onclick="openBlockModal('${d.id}','${(d.device_name||d.name||'Player').replace(/'/g,"\\'")}','${d.status}')" style="flex:1;padding:6px;background:${d.status==='maintenance'?'rgba(255,193,7,.12)':'var(--surface2)'};border:1px solid ${d.status==='maintenance'?'rgba(255,193,7,.3)':'var(--border)'};color:${d.status==='maintenance'?'#ffc107':'var(--muted)'};border-radius:8px;font-size:11px;font-weight:600;cursor:pointer">
+        <button onclick="openBlockModal('${d.id}','${(d.name||d.name||'Player').replace(/'/g,"\\'")}','${d.status}')" style="flex:1;padding:6px;background:${d.status==='maintenance'?'rgba(255,193,7,.12)':'var(--surface2)'};border:1px solid ${d.status==='maintenance'?'rgba(255,193,7,.3)':'var(--border)'};color:${d.status==='maintenance'?'#ffc107':'var(--muted)'};border-radius:8px;font-size:11px;font-weight:600;cursor:pointer">
           ${d.status==='maintenance' ? '🔓 Desbloquear tela' : '🔒 Bloquear horários'}
         </button>
-        <button onclick="openGradeConfigModal('${d.id}','${(d.device_name||d.name||'Player').replace(/'/g,"\\'")}")" style="padding:6px 10px;background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:8px;font-size:11px;font-weight:600;cursor:pointer" title="Configurar grade de exibição">
+        <button onclick="openGradeConfigModal('${d.id}','${(d.name||d.name||'Player').replace(/'/g,"\\'")}")" style="padding:6px 10px;background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:8px;font-size:11px;font-weight:600;cursor:pointer" title="Configurar grade de exibição">
           📺 Grade
         </button>
       </div>
@@ -5199,9 +5199,9 @@ async function initGradeConfigDevices() {
   sel.innerHTML = '<option value="">Carregando telas...</option>';
 
   try {
-    let q = sb.from('devices').select('id, device_name, screen_id');
+    let q = sb.from('devices').select('id, name, screen_id');
     if (PROF?.role !== 'super_admin') q = q.eq('owner_id', ME.id);
-    const { data: devs, error } = await q.order('device_name');
+    const { data: devs, error } = await q.order('name');
 
     if (error) throw error;
 
@@ -5212,7 +5212,7 @@ async function initGradeConfigDevices() {
       return;
     }
     sel.innerHTML = devs.map(d =>
-      `<option value="${d.id}">${d.device_name || d.id}</option>`
+      `<option value="${d.id}">${d.name || d.id}</option>`
     ).join('');
 
     loadGradeConfig();
